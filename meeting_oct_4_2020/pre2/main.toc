@@ -1,0 +1,4 @@
+\beamer@sectionintoc {1}{Single Agent Reinforcement Learning}{3}{0}{1}
+\beamer@sectionintoc {2}{ Multi Agent RL and its challenges}{7}{0}{2}
+\beamer@sectionintoc {3}{Methods to solve but not optimally}{8}{0}{3}
+\beamer@sectionintoc {4}{Applications}{12}{0}{4}
