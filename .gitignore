@@ -5,5 +5,5 @@
 *.log 
 *.bbl 
 *.blg
-*.pdf
+*.snm
 .synctex.gz

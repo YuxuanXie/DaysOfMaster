@@ -292,7 +292,7 @@
   \hspace{0.05\linewidth} 
   \begin{minipage}{0.45\textwidth}
     \begin{center}
-    A $<S, A, R, P, O, N>$
+    A tuple $<S, A, R, P, O, N>$
     \end{center}
    \begin{itemize}
      \item S : the set of state
@@ -310,13 +310,13 @@
 \section{Methods to solve but not optimally}
 \begin{frame}
   \frametitle{Model-based and Model-free}
-  \textbf{Methods to solve model-based RL}
+  \textbf{Methods to solve model-based MARL}
   \begin{itemize}
     \item Counterfactural regret minimazition (CFR)
     \item Occupancy-belief-state-HSVI 
   \end{itemize}
   
-  \textbf{Methods to solve model-free RL}
+  \textbf{Methods to solve model-free MARL}
     \begin{itemize}
       \item[] core mechanism : Centralizd trainning and decentralized execution
       \begin{itemize}
@@ -349,6 +349,8 @@
   \begin{center}
     \includegraphics[width=0.8\textwidth]{coma.png}
   \end{center}
+  Just replace the value-based actor by the policy gradient actor. \\
+  And some changes about the policy gradient algorithms.
 \end{frame}
 
 \section{Applications}
@@ -383,7 +385,8 @@
   \end{minipage}
   \end{figure}
   \vfill
-  
+
+
 \end{frame}
 
 \end{document}
