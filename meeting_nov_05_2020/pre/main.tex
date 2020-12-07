@@ -1,0 +1,369 @@
+
+%!TeX encoding = UTF-8
+%!TeX program = xelatex
+\documentclass[notheorems, aspectratio=54]{beamer}
+% aspectratio: 1610, 149, 54, 43(default), 32
+
+\usepackage{latexsym}
+\usepackage{amsmath,amssymb}
+\usepackage{mathtools}
+\usepackage{color,xcolor}
+\usepackage{graphicx}
+\usepackage{algorithm}
+\usepackage{amsthm}
+\usepackage{lmodern} % 解决 font warning
+% \usepackage[UTF8]{ctex}
+\usepackage{animate} % insert gif
+
+\usepackage{lipsum} % To generate test text 
+\usepackage{ulem} % 下划线，波浪线
+
+\usepackage{listings} % display code on slides; don't forget [fragile] option after \begin{frame}
+% \usepackage{subcaption}
+% ----------------------------------------------
+% tikx
+\usepackage{framed}
+\usepackage{tikz}
+\usepackage{pgf}
+\usetikzlibrary{calc,trees,positioning,arrows,chains,shapes.geometric,%
+    decorations.pathreplacing,decorations.pathmorphing,shapes,%
+    matrix,shapes.symbols}
+\pgfmathsetseed{1} % To have predictable results
+% Define a background layer, in which the parchment shape is drawn
+\pgfdeclarelayer{background}
+\pgfsetlayers{background,main}
+
+% define styles for the normal border and the torn border
+\tikzset{
+  normal border/.style={orange!30!black!10, decorate, 
+     decoration={random steps, segment length=2.5cm, amplitude=.7mm}},
+  torn border/.style={orange!30!black!5, decorate, 
+     decoration={random steps, segment length=.5cm, amplitude=1.7mm}}}
+
+% Macro to draw the shape behind the text, when it fits completly in the
+% page
+\def\parchmentframe#1{
+\tikz{
+  \node[inner sep=2em] (A) {#1};  % Draw the text of the node
+  \begin{pgfonlayer}{background}  % Draw the shape behind
+  \fill[normal border] 
+        (A.south east) -- (A.south west) -- 
+        (A.north west) -- (A.north east) -- cycle;
+  \end{pgfonlayer}}}
+
+% Macro to draw the shape, when the text will continue in next page
+\def\parchmentframetop#1{
+\tikz{
+  \node[inner sep=2em] (A) {#1};    % Draw the text of the node
+  \begin{pgfonlayer}{background}    
+  \fill[normal border]              % Draw the ``complete shape'' behind
+        (A.south east) -- (A.south west) -- 
+        (A.north west) -- (A.north east) -- cycle;
+  \fill[torn border]                % Add the torn lower border
+        ($(A.south east)-(0,.2)$) -- ($(A.south west)-(0,.2)$) -- 
+        ($(A.south west)+(0,.2)$) -- ($(A.south east)+(0,.2)$) -- cycle;
+  \end{pgfonlayer}}}
+
+% Macro to draw the shape, when the text continues from previous page
+\def\parchmentframebottom#1{
+\tikz{
+  \node[inner sep=2em] (A) {#1};   % Draw the text of the node
+  \begin{pgfonlayer}{background}   
+  \fill[normal border]             % Draw the ``complete shape'' behind
+        (A.south east) -- (A.south west) -- 
+        (A.north west) -- (A.north east) -- cycle;
+  \fill[torn border]               % Add the torn upper border
+        ($(A.north east)-(0,.2)$) -- ($(A.north west)-(0,.2)$) -- 
+        ($(A.north west)+(0,.2)$) -- ($(A.north east)+(0,.2)$) -- cycle;
+  \end{pgfonlayer}}}
+
+% Macro to draw the shape, when both the text continues from previous page
+% and it will continue in next page
+\def\parchmentframemiddle#1{
+\tikz{
+  \node[inner sep=2em] (A) {#1};   % Draw the text of the node
+  \begin{pgfonlayer}{background}   
+  \fill[normal border]             % Draw the ``complete shape'' behind
+        (A.south east) -- (A.south west) -- 
+        (A.north west) -- (A.north east) -- cycle;
+  \fill[torn border]               % Add the torn lower border
+        ($(A.south east)-(0,.2)$) -- ($(A.south west)-(0,.2)$) -- 
+        ($(A.south west)+(0,.2)$) -- ($(A.south east)+(0,.2)$) -- cycle;
+  \fill[torn border]               % Add the torn upper border
+        ($(A.north east)-(0,.2)$) -- ($(A.north west)-(0,.2)$) -- 
+        ($(A.north west)+(0,.2)$) -- ($(A.north east)+(0,.2)$) -- cycle;
+  \end{pgfonlayer}}}
+
+% Define the environment which puts the frame
+% In this case, the environment also accepts an argument with an optional
+% title (which defaults to ``Example'', which is typeset in a box overlaid
+% on the top border
+\newenvironment{parchment}[1][Example]{%
+  \def\FrameCommand{\parchmentframe}%
+  \def\FirstFrameCommand{\parchmentframetop}%
+  \def\LastFrameCommand{\parchmentframebottom}%
+  \def\MidFrameCommand{\parchmentframemiddle}%
+  \vskip\baselineskip
+  \MakeFramed {\FrameRestore}
+  \noindent\tikz\node[inner sep=1ex, draw=black!20,fill=white, 
+          anchor=west, overlay] at (0em, 2em) {\sffamily#1};\par}%
+{\endMakeFramed}
+
+% ----------------------------------------------
+
+\mode<presentation>{
+    \usetheme{CambridgeUS}
+    % Boadilla CambridgeUS
+    % default Antibes Berlin Copenhagen
+    % Madrid Montpelier Ilmenau Malmoe
+    % Berkeley Singapore Warsaw
+    \usecolortheme{beaver}
+    % beetle, beaver, orchid, whale, dolphin
+    \useoutertheme{infolines}
+    % infolines miniframes shadow sidebar smoothbars smoothtree split tree
+    \useinnertheme{circles}
+    % circles, rectanges, rounded, inmargin
+}
+% 设置 block 颜色
+\setbeamercolor{block title}{bg=red!30,fg=white}
+
+\newcommand{\reditem}[1]{\setbeamercolor{item}{fg=red}\item #1}
+
+% 缩放公式大小
+\newcommand*{\Scale}[2][4]{\scalebox{#1}{\ensuremath{#2}}}
+
+% 解决 font warning
+\renewcommand\textbullet{\ensuremath{\bullet}}
+
+% ---------------------------------------------------------------------
+% flow chart
+\tikzset{
+    >=stealth',
+    punktchain/.style={
+        rectangle, 
+        rounded corners, 
+        % fill=black!10,
+        draw=white, very thick,
+        text width=6em,
+        minimum height=2em, 
+        text centered, 
+        on chain
+    },
+    largepunktchain/.style={
+        rectangle,
+        rounded corners,
+        draw=white, very thick,
+        text width=10em,
+        minimum height=2em,
+        on chain
+    },
+    line/.style={draw, thick, <-},
+    element/.style={
+        tape,
+        top color=white,
+        bottom color=blue!50!black!60!,
+        minimum width=6em,
+        draw=blue!40!black!90, very thick,
+        text width=6em, 
+        minimum height=2em, 
+        text centered, 
+        on chain
+    },
+    every join/.style={->, thick,shorten >=1pt},
+    decoration={brace},
+    tuborg/.style={decorate},
+    tubnode/.style={midway, right=2pt},
+    font={\fontsize{10pt}{12}\selectfont},
+}
+% ---------------------------------------------------------------------
+
+% code setting
+\lstset{
+    language=C++,
+    basicstyle=\ttfamily\footnotesize,
+    keywordstyle=\color{red},
+    breaklines=true,
+    xleftmargin=2em,
+    numbers=left,
+    numberstyle=\color[RGB]{222,155,81},
+    frame=leftline,
+    tabsize=4,
+    breakatwhitespace=false,
+    showspaces=false,               
+    showstringspaces=false,
+    showtabs=false,
+    morekeywords={Str, Num, List},
+}
+
+% ---------------------------------------------------------------------
+
+%% preamble
+\title[Role-based PS MARL]{Role-based Parameter Sharing Multi-Agent Reinforcement Learning}
+% \subtitle{The subtitle}
+\author{Yuxuan XIE}
+\institute[HIT]{yuxuan.xie@hotmail.com}
+
+% -------------------------------------------------------------
+
+\begin{document}
+
+%% title frame
+\begin{frame}
+  \titlepage
+\end{frame}
+
+%% normal frame
+\begin{frame}
+  \frametitle{Outline}
+  \tableofcontents
+\end{frame}
+
+\section{Background}
+\begin{frame}
+    Reinforcement Learning has made great progress during the past decades while its application is limited to single-agent scenarios. MARL extends the boundary of RL greatly.
+  \begin{figure}[h]
+  \begin{minipage}{0.3\textwidth}
+    \includegraphics[width=\textwidth]{holdem-showdown-1280x720-600x338.jpg}
+    \begin{center}
+    Teaxs hold'em
+    \end{center}
+  \end{minipage}%
+  \hspace{0.02\linewidth}
+  \begin{minipage}{0.3\textwidth}
+    \includegraphics[width=\textwidth]{hanabi.jpg}
+    \begin{center}
+    Hanabi
+    \end{center}
+  \end{minipage}
+  \hspace{0.02\linewidth}
+  \begin{minipage}{0.3\textwidth}
+    \includegraphics[width=\textwidth]{Pommerman.jpg}
+    \begin{center}
+    Pommerman
+    \end{center}
+  \end{minipage}
+  \begin{minipage}{0.3\textwidth}
+    \includegraphics[width=\textwidth]{ starcraft.png}
+    \begin{center}
+    Starcraft
+    \end{center}
+  \end{minipage}
+  \hspace{0.02\linewidth}
+  \begin{minipage}{0.3\textwidth}
+    \includegraphics[width=\textwidth]{ dota.png}
+    \begin{center}
+    dota 
+    \end{center}
+  \end{minipage}
+  \hspace{0.02\linewidth}
+  \begin{minipage}{0.3\textwidth}
+    \includegraphics[width=\textwidth]{Neural_MMO.png}
+    \begin{center}
+    Neural MMO 
+    \end{center}
+  \end{minipage}
+  \end{figure}
+\end{frame}
+
+\section{Frontier topics in MARL}
+\begin{frame}
+\begin{itemize}
+\frametitle{Categorizes}
+\item \textbf{Analysis of emergent behaviors} : Try to \textcolor{red}{analyze and evalutae} RL algorithms in MARL environment.
+\item \textbf{Learning communication}: Try to exploit the \textcolor{red}{communication} between agents to get better performance. 
+\item \textbf{Learning cooperation} : Try to make agents learn to \textcolor{red}{cooperate} to complete tasks, which is the most interesting and attractive one.
+\item \textbf{Agents modeling agents}: Try to \textcolor{red}{predict other agents' actions} to eliminate the dynamic of the environment caused by other agents. 
+\end{itemize}
+\end{frame}
+
+\section{Learning cooperation}
+
+\begin{frame}
+  \frametitle{Dec-POMDPs}
+  \begin{minipage}{0.45\textwidth}
+    \includegraphics[width=\textwidth]{dec_pomdp.png}
+  \end{minipage}
+  \hspace{0.05\linewidth} 
+  \begin{minipage}{0.45\textwidth}
+    \begin{center}
+    A tuple $<S, A, R, P, O, N>$
+    \end{center}
+   \begin{itemize}
+     \item S : the set of state
+     \item A : the set of action $A = \times_{i}A^{i}$
+     \item R : the set of reward 
+     \item P : the transition model
+     \item O : the set of observation $O = \times_{i}O^{i}$
+     \item N : the number of agent
+   \end{itemize}
+  
+  \end{minipage}
+\end{frame}
+
+\begin{frame}
+  \frametitle{QMIX}
+  \begin{center}
+    \includegraphics[width=0.8\textwidth]{QMIX.png}
+  \end{center}
+    The mixing network just works during the trainning process.\\
+\end{frame}
+
+\begin{frame}
+
+\frametitle{ROMA: MARL with Emergent Roles}
+\begin{center}
+\begin{minipage}{0.6\textwidth}
+  \begin{center}
+  \includegraphics[width=\textwidth]{ roma.png}
+  The model ROMA used 
+  \end{center}
+\end{minipage}
+\end{center}
+\end{frame}
+
+\begin{frame}
+\frametitle{Key ideas of this paper}
+\begin{itemize}
+  \item key contributation: $ Loss = \mathcal{L}_{TD} + \lambda_{MI} \mathcal{L}_{MI} + \lambda_{Dis} \mathcal{L}_{Dis}$
+  \item $\mathcal{L}_{MI}$ : To make agent's role more stable by maximizing $I(\rho_i, \tau_i | o_i)$. 
+  \item $\mathcal{L}_{Dis}$ : To give agents who have the similar histories can get the same role. \\
+    A trick here: $I(\rho_i; \tau_j) + d_{\phi}(\tau_i, \tau_j) > U $
+    % A trick here: We can maximize $I(\rho_i; \tau_j)$ to encourage two agents i and j to have similar roles, which will cause all agents the same roles. 
+    % Then we use a dissimilarity model to stop this happening.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{An following idea: Can we group agents by other methods?}
+
+\begin{itemize}
+\item K means (cannot make sure the network is differentiable)
+\item Attention : Open AI used attention to help them to differenciate items.
+\item Graphic Convolutional Network
+\item Other clustering methods
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{GRAPH CONVOLUTIONAL REINFORCEMENT LEARNING}
+\begin{center}
+\begin{minipage}{0.6\textwidth}
+  \begin{center}
+  \includegraphics[width=\textwidth]{ Graph_Convolutional_RL.png}
+  The structure of GCRL. % But they don't mention parameter sharing.
+  \end{center}
+\end{minipage}
+\end{center}
+\end{frame}
+
+\section{Plan for the next step}
+\begin{frame}
+\frametitle{Next step}
+\begin{itemize}
+\item Check if its doable to apply attention to do parameter sharing to improve the performance.
+\item Find some other small benckmarks.
+\end{itemize}
+\end{frame}
+
+\end{document}
